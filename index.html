@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileZilla Credentials Extractor | Recover FTP Passwords</title>
+    <meta name="description"
+        content="Instantly extract and decode saved passwords from FileZilla. Free, open-source tool to recover forgotten FTP credentials from FileZilla.xml.">
+    <meta name="keywords"
+        content="FileZilla, password recovery, credential extractor, FileZilla.xml, decode base64, ftp password, open source">
+    <link rel="canonical" href="https://fzextractor.github.io">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fzextractor.github.io">
+    <meta property="og:title" content="FileZilla Credentials Extractor">
+    <meta property="og:description"
+        content="Recover forgotten FTP passwords from FileZilla instantly. Open-source and secure.">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://fzextractor.github.io">
+    <meta property="twitter:title" content="FileZilla Credentials Extractor">
+    <meta property="twitter:description"
+        content="Recover forgotten FTP passwords from FileZilla instantly. Open-source and secure.">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- JSON-LD Schema for FAQs -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Is this tool safe to use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, it is 100% safe. The project is open-source, so you can review the code securely. It runs locally on your machine and does not send any data to external servers."
+        }
+      }, {
+        "@type": "Question",
+        "name": "How does it work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "FileZilla stores saved connections in a `FileZilla.xml` file with Base64 encoded passwords. This tool parses that file and decodes the passwords back to plain text."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Does it work on Mac and Linux?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! The Python version works on Windows, macOS, and Linux. There is also a standalone executable available specifically for Windows users."
+        }
+      }]
+    }
+    </script>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg py-3">
+        <div class="container console-container">
+            <a class="navbar-brand" href="#" style="color: var(--accent-color); font-weight: bold;">
+                > FZ_EXTRACTOR_
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                style="border-color: var(--accent-color);">
+                <span class="fa fa-bars" style="color: var(--accent-color);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#features">./features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#install">./install</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#usage">./usage</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#faq">./faq</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/Deadpool2000/fz-credentials-extractor"
+                            target="_blank">
+                            <i class="fab fa-github"></i> github
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container console-container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <div class="hero-content mb-5 mb-lg-0">
+                        <h1 class="mb-4">EXTRACT <br>DECODE <br>VIEW</h1>
+                        <p class="lead mb-4" id="typing-text"></p>
+                        <div class="d-flex gap-3">
+                            <a href="#install" class="btn-console">INIT_DOWNLOAD()</a>
+                            <a href="https://github.com/Deadpool2000/fz-credentials-extractor/" target="_blank"
+                                class="btn-console"
+                                style="border-color: var(--text-color); color: var(--text-color);">VIEW_SOURCE</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="terminal-card">
+                        <div class="terminal-header">
+                            <div class="dot red"></div>
+                            <div class="dot yellow"></div>
+                            <div class="dot green"></div>
+                            <span class="ms-2 text-muted" style="font-size: 0.8rem;">bash</span>
+                        </div>
+                        <div class="terminal-body">
+                            <p class="mb-2">$ ./fz-extractor</p>
+                            <p class="mb-2 text-white">Loading XML configuration...</p>
+                            <p class="mb-2 text-white">Found 12 servers...</p>
+                            <p class="mb-2 text-white">decoding passwords... <span style="color: #27c93f;">DONE</span>
+                            </p>
+                            <p class="mb-0">
+                                Server: example.com<br>
+                                User: admin<br>
+                                Pass: *********
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <div class="container console-container">
+            <h2 class="mb-5">> SYTEM_CAPABILITIES</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-item">
+                        <i class="fas fa-unlock feature-icon"></i>
+                        <h4>Auto Decode</h4>
+                        <p>Instantly decodes Base64 passwords. No more manual copy-pasting into decoders.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-item">
+                        <i class="fas fa-search feature-icon"></i>
+                        <h4>Search & Filter</h4>
+                        <p>Dynamic filtering allows you to find specific server credentials in milliseconds.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-item">
+                        <i class="fas fa-desktop feature-icon"></i>
+                        <h4>Modern UI</h4>
+                        <p>Built with PyQt6, featuring a clean, dark mode interface that fits your workflow.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle feature-icon"></i>
+                        <h4>XML Validation</h4>
+                        <p>Automatically validates imported files to ensure data integrity and prevent errors.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-item">
+                        <i class="fas fa-table feature-icon"></i>
+                        <h4>Structured Data</h4>
+                        <p>Presents messy XML data in a clean, sortable, and readable table format.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-item">
+                        <i class="fab fa-windows feature-icon"></i>
+                        <h4>Cross Platform</h4>
+                        <p>Compatible with Windows, macOS, and Linux. Standalone EXE available for Windows.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section id="install">
+        <div class="container console-container">
+            <h2 class="mb-5">> SETUP_PROTOCOL</h2>
+
+            <div class="mb-5">
+                <h3 class="h5 mb-3 text-white">// Option 1: Windows Executable (Recommended)</h3>
+                <div class="terminal-card">
+                    <div class="terminal-header">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="terminal-body">
+                        1. Visit the <a href="https://github.com/Deadpool2000/fz-credentials-extractor/releases"
+                            target="_blank">Releases Page</a>.<br>
+                        2. Download the latest <code>.exe</code> file.<br>
+                        3. Run the application (Ignore SmartScreen warning if it appears).
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="h5 mb-3 text-white">// Option 2: Python (Dev Mode)</h3>
+                <p class="mb-3">Prerequisites: Python 3.7+</p>
+                <div class="position-relative">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button><code>git clone https://github.com/Deadpool2000/fz-credentials-extractor
+cd fz-credentials-extractor
+pip install -r requirements.txt
+python main.py</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usage Section -->
+    <section id="usage">
+        <div class="container console-container">
+            <h2 class="mb-5">> EXECUTION_GUIDE</h2>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="list-group list-group-flush bg-transparent">
+                        <div class="list-group-item bg-transparent text-white border-secondary">
+                            <span class="text-success me-2">[1]</span> Open FileZilla Client
+                        </div>
+                        <div class="list-group-item bg-transparent text-white border-secondary">
+                            <span class="text-success me-2">[2]</span> Go to <strong>File > Export...</strong>
+                        </div>
+                        <div class="list-group-item bg-transparent text-white border-secondary">
+                            <span class="text-success me-2">[3]</span> Check "Export Site Manager entries"
+                        </div>
+                        <div class="list-group-item bg-transparent text-white border-secondary">
+                            <span class="text-success me-2">[4]</span> Save the XML file
+                        </div>
+                        <div class="list-group-item bg-transparent text-white border-secondary">
+                            <span class="text-success me-2">[5]</span> Launch Extractor & Load XML
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mt-4 mt-md-0">
+                    <div class="terminal-card">
+                        <div class="terminal-body text-center">
+                            <i class="fas fa-file-code fa-3x mb-3 text-white"></i>
+                            <p>FileZilla.xml</p>
+                            <i class="fas fa-arrow-down mb-3 mt-3"></i><br>
+                            <i class="fas fa-cog fa-spin fa-2x mb-3 text-success"></i>
+                            <p>Processing...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq">
+        <div class="container console-container">
+            <h2 class="mb-5">> FREQUENTLY_ASKED</h2>
+            <div class="accordion accordion-flush" id="accordionFAQ">
+                <div class="accordion-item bg-transparent border-secondary">
+                    <h3 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed bg-transparent text-white shadow-none" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false"
+                            aria-controls="collapseOne">
+                            <i class="fas fa-shield-alt me-2 text-success"></i> Is this tool safe to use?
+                        </button>
+                    </h3>
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                        data-bs-parent="#accordionFAQ">
+                        <div class="accordion-body text-white-50">
+                            Yes, it is 100% safe. The project is open-source, so you can review the code securely on
+                            GitHub. It runs locally on your machine and does not send any data to external servers or
+                            third parties.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item bg-transparent border-secondary">
+                    <h3 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed bg-transparent text-white shadow-none" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false"
+                            aria-controls="collapseTwo">
+                            <i class="fas fa-cogs me-2 text-success"></i> How does it work?
+                        </button>
+                    </h3>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                        data-bs-parent="#accordionFAQ">
+                        <div class="accordion-body text-white-50">
+                            FileZilla stores saved connections in a <code>FileZilla.xml</code> file (or similar) with
+                            Base64 encoded passwords. This tool parses that file, finds the credentials, and decodes the
+                            passwords back to plain text for you to view.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item bg-transparent border-secondary">
+                    <h3 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed bg-transparent text-white shadow-none" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false"
+                            aria-controls="collapseThree">
+                            <i class="fab fa-linux me-2 text-success"></i> Does it work on Mac and Linux?
+                        </button>
+                    </h3>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                        data-bs-parent="#accordionFAQ">
+                        <div class="accordion-body text-white-50">
+                            Yes! Since the core tool is written in Python, it runs seamlessly on Windows, macOS, and
+                            Linux. We also provide a standalone <code>.exe</code> for Windows users who don't want to
+                            set up Python.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>
+                &copy; <span id="year"></span> Deadpool2000. All systems operational.<br>
+                <a href="https://github.com/Deadpool2000/fz-credentials-extractor" target="_blank">Repository</a> |
+                <a href="https://github.com/Deadpool2000/fz-credentials-extractor/issues" target="_blank">Report
+                    Issue</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+
+</html>
